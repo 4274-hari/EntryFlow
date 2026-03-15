@@ -1,25 +1,19 @@
 const LateEntry = require("./lateEntry.model");
 const Student = require("../student/student.model");
 
-const mongoose = require("mongoose");
-
 const markLateEntry = async (data, userId) => {
-
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
 
     const student = await Student.findOne({
       studentId: data.studentId.toUpperCase()
-    }).session(session);
+    });
 
     if (!student) throw new Error("Student not found");
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    await LateEntry.create([{
+    await LateEntry.create({
       student: student._id,
       studentId: student.studentId,
       department: student.department,
@@ -27,17 +21,12 @@ const markLateEntry = async (data, userId) => {
       section: student.section,
       date: today,
       recordedBy: userId
-    }], { session });
+    });
 
     student.totalLateCount += 1;
-    await student.save({ session });
-
-    await session.commitTransaction();
-    session.endSession();
+    await student.save();
 
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     throw error;
   }
 };

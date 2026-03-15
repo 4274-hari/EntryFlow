@@ -56,20 +56,13 @@ const uploadStudentsFromExcel = async (fileBuffer) => {
 
 
 // 🔹 Get all students
-const getAllStudents = async (page = 1, limit = 20) => {
+const getAllStudents = async () => {
+  const students = await Student.find();
 
-  const skip = (page - 1) * limit;
-
-  const students = await Student.find()
-    .skip(skip)
-    .limit(limit);
-
-  const total = await Student.countDocuments();
+  const total = students.length;
 
   return {
     total,
-    page,
-    totalPages: Math.ceil(total / limit),
     data: students
   };
 };

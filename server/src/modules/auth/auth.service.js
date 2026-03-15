@@ -4,7 +4,7 @@ const User = require("./auth.model");
 const config = require("../../config/env");
 
 const registerUser = async (data) => {
-  const { name, email, password, role } = data;
+  const { name, email, password, role, department } = data;
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -20,7 +20,8 @@ const registerUser = async (data) => {
     name,
     email,
     password: hashedPassword,
-    role
+    role,
+    department
   });
 
   return user;
